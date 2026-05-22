@@ -11,6 +11,16 @@ public partial class LumaEdgesSettingsWindow : Window
         LoadSettings();
     }
 
+    private void Window_Loaded(object sender, RoutedEventArgs e)
+    {
+        ((App)System.Windows.Application.Current).LumaEdges.SetDebugColorVisible(true);
+    }
+
+    private void Window_Closed(object sender, System.EventArgs e)
+    {
+        ((App)System.Windows.Application.Current).LumaEdges.SetDebugColorVisible(false);
+    }
+
     private void Window_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
         if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
