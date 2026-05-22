@@ -15,9 +15,10 @@ public class AppSettings
 
     // LumaEdges specific
     public int LumaEdgesThickness { get; set; } = 2;
-    public string LumaEdgesTriggerButton { get; set; } = "Left";
     
-    public Dictionary<string, string> LumaEdgesZones { get; set; } = new()
+    public Dictionary<string, string> LumaEdgesLeftZones { get; set; } = new();
+    
+    public Dictionary<string, string> LumaEdgesRightZones { get; set; } = new()
     {
         { "Top", "Ctrl+Alt+Up" },
         { "Bottom", "Ctrl+Alt+Down" },
@@ -28,5 +29,7 @@ public class AppSettings
         { "BottomLeft", "Ctrl+Esc" },
         { "BottomRight", "Win+D" }
     };
+
+    public Dictionary<string, string> LumaEdgesMiddleZones { get; set; } = new();
 }
 

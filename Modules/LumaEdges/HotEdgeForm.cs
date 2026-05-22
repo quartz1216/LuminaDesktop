@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 
 namespace LuminaDesktop.Modules.LumaEdges;
 
@@ -6,6 +6,7 @@ public sealed class HotEdgeForm : Form
 {
     private const int WsExNoActivate = 0x08000000;
     private const int WsExToolWindow = 0x00000080;
+    private const int WsExTransparent = 0x00000020;
     private const int WmGetMinMaxInfo = 0x0024;
     private const uint SwpNoSize = 0x0001;
     private const uint SwpNoMove = 0x0002;
@@ -14,25 +15,18 @@ public sealed class HotEdgeForm : Form
     private const uint SwpNoOwnerZOrder = 0x0200;
     private static readonly nint HwndTop = new(0);
     private static readonly nint HwndTopMost = new(-1);
-    private static readonly object CooldownLock = new();
-    private static readonly TimeSpan Cooldown = TimeSpan.FromMilliseconds(300);
-    private static DateTimeOffset _lastTriggeredAt = DateTimeOffset.MinValue;
 
     private readonly Rectangle _screenBounds;
     private readonly Rectangle _edgeBounds;
     private readonly HotZone _edge;
-    private readonly Func<AppSettings> _settingsProvider;
-    private readonly Action<string> _debugNotifier;
     private readonly System.Windows.Forms.Timer _topMostTimer;
     private bool _showDebugColor;
 
-    public HotEdgeForm(Rectangle screenBounds, Rectangle edgeBounds, HotZone edge, Func<AppSettings> settingsProvider, Action<string> debugNotifier)
+    public HotEdgeForm(Rectangle screenBounds, Rectangle edgeBounds, HotZone edge)
     {
         _screenBounds = screenBounds;
         _edgeBounds = edgeBounds;
         _edge = edge;
-        _settingsProvider = settingsProvider;
-        _debugNotifier = debugNotifier;
 
         FormBorderStyle = FormBorderStyle.None;
         ShowInTaskbar = false;
@@ -56,7 +50,7 @@ public sealed class HotEdgeForm : Form
         get
         {
             var cp = base.CreateParams;
-            cp.ExStyle |= WsExToolWindow | WsExNoActivate;
+            cp.ExStyle |= WsExToolWindow | WsExNoActivate | WsExTransparent;
             return cp;
         }
     }
@@ -81,39 +75,6 @@ public sealed class HotEdgeForm : Form
         }
     }
 
-    protected override async void OnMouseDown(MouseEventArgs e)
-    {
-        base.OnMouseDown(e);
-
-        var foregroundBefore = GetForegroundWindow();
-        var settings = _settingsProvider();
-        if (!IsSupportedTriggerButton(e.Button, settings.LumaEdgesTriggerButton))
-        {
-            WriteClickDebug($"ignored button={e.Button} configured={settings.LumaEdgesTriggerButton} cursor={Cursor.Position} foregroundBefore=0x{foregroundBefore.ToInt64():X}");
-            return;
-        }
-
-        var cursorPosition = Cursor.Position;
-        var zone = HotZoneDetector.Detect(cursorPosition, _screenBounds, settings.LumaEdgesThickness);
-        if (zone == HotZone.None)
-        {
-            WriteClickDebug($"no-zone button={e.Button} cursor={cursorPosition} screenBounds={_screenBounds} thickness={settings.LumaEdgesThickness} foregroundBefore=0x{foregroundBefore.ToInt64():X}");
-            return;
-        }
-
-        var hotkey = settings.LumaEdgesZones.TryGetValue(zone.ToString(), out var h) ? h : null;
-        if (string.IsNullOrWhiteSpace(hotkey) || !TryStartCooldown())
-        {
-            WriteClickDebug($"no-send zone={zone} hotkey='{hotkey}' cursor={cursorPosition} thickness={settings.LumaEdgesThickness} foregroundBefore=0x{foregroundBefore.ToInt64():X}");
-            return;
-        }
-
-        await Task.Delay(30);
-        var result = HotkeySender.SendDetailed(hotkey);
-        var foregroundAfter = GetForegroundWindow();
-        WriteClickDebug($"send zone={zone} hotkey='{hotkey}' success={result.Succeeded} sent={result.SentInputs}/{result.ExpectedInputs} error={result.ErrorCode} cursor={cursorPosition} foregroundBefore=0x{foregroundBefore.ToInt64():X} foregroundAfter=0x{foregroundAfter.ToInt64():X} message='{result.Message}'");
-    }
-
     protected override void Dispose(bool disposing)
     {
         if (disposing)
@@ -125,37 +86,14 @@ public sealed class HotEdgeForm : Form
         base.Dispose(disposing);
     }
 
-    private static bool IsSupportedTriggerButton(MouseButtons actualButton, string? configuredButton)
-    {
-        return actualButton == MouseButtons.Left
-            && string.Equals(configuredButton, "Left", StringComparison.OrdinalIgnoreCase);
-    }
-
     private static Color GetDebugColor(HotZone edge)
     {
         return edge switch
         {
-            HotZone.Top => Color.Red,
-            HotZone.Bottom => Color.Blue,
-            HotZone.Left => Color.Lime,
-            HotZone.Right => Color.Yellow,
-            _ => Color.Magenta
+            HotZone.Top or HotZone.Bottom or HotZone.Left or HotZone.Right => Color.Blue,
+            HotZone.TopLeft or HotZone.TopRight or HotZone.BottomLeft or HotZone.BottomRight => Color.Purple,
+            _ => Color.Blue
         };
-    }
-
-    private static bool TryStartCooldown()
-    {
-        lock (CooldownLock)
-        {
-            var now = DateTimeOffset.UtcNow;
-            if (now - _lastTriggeredAt < Cooldown)
-            {
-                return false;
-            }
-
-            _lastTriggeredAt = now;
-            return true;
-        }
     }
 
     private void KeepTopMost()
@@ -211,12 +149,6 @@ public sealed class HotEdgeForm : Form
 
     [DllImport("user32.dll")]
     private static extern nint GetForegroundWindow();
-
-    private void WriteClickDebug(string message)
-    {
-        DebugLog.Write(message);
-        _debugNotifier(message);
-    }
 
     [StructLayout(LayoutKind.Sequential)]
     private struct MINMAXINFO

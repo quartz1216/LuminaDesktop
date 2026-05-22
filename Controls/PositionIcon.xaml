@@ -1,0 +1,29 @@
+<UserControl x:Class="LuminaDesktop.Controls.PositionIcon"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="16" Height="16">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        
+        <Ellipse x:Name="dotTopLeft" Grid.Row="0" Grid.Column="0" Fill="#696969" Margin="0.5"/>
+        <Ellipse x:Name="dotTop" Grid.Row="0" Grid.Column="1" Fill="#696969" Margin="0.5"/>
+        <Ellipse x:Name="dotTopRight" Grid.Row="0" Grid.Column="2" Fill="#696969" Margin="0.5"/>
+        
+        <Ellipse x:Name="dotLeft" Grid.Row="1" Grid.Column="0" Fill="#696969" Margin="0.5"/>
+        <!-- center is empty -->
+        <Ellipse x:Name="dotRight" Grid.Row="1" Grid.Column="2" Fill="#696969" Margin="0.5"/>
+        
+        <Ellipse x:Name="dotBottomLeft" Grid.Row="2" Grid.Column="0" Fill="#696969" Margin="0.5"/>
+        <Ellipse x:Name="dotBottom" Grid.Row="2" Grid.Column="1" Fill="#696969" Margin="0.5"/>
+        <Ellipse x:Name="dotBottomRight" Grid.Row="2" Grid.Column="2" Fill="#696969" Margin="0.5"/>
+    </Grid>
+</UserControl>

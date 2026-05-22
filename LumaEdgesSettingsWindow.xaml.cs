@@ -29,57 +29,84 @@ public partial class LumaEdgesSettingsWindow : Window
 
     private void LoadSettings()
     {
-        var app = (App)System.Windows.Application.Current;
-        var settings = app.CurrentSettings;
-
+        var settings = SettingsService.Load();
         sldThickness.Value = settings.LumaEdgesThickness;
-        foreach (ComboBoxItem item in cmbTriggerButton.Items)
-        {
-            if (item.Content.ToString() == settings.LumaEdgesTriggerButton)
-            {
-                cmbTriggerButton.SelectedItem = item;
-                break;
-            }
-        }
 
-        txtTop.Text = GetZone(settings, "Top");
-        txtBottom.Text = GetZone(settings, "Bottom");
-        txtLeft.Text = GetZone(settings, "Left");
-        txtRight.Text = GetZone(settings, "Right");
-        txtTopLeft.Text = GetZone(settings, "TopLeft");
-        txtTopRight.Text = GetZone(settings, "TopRight");
-        txtBottomLeft.Text = GetZone(settings, "BottomLeft");
-        txtBottomRight.Text = GetZone(settings, "BottomRight");
+        // Right Button
+        txtRightTop.Text = GetZone(settings.LumaEdgesRightZones, "Top");
+        txtRightBottom.Text = GetZone(settings.LumaEdgesRightZones, "Bottom");
+        txtRightLeft.Text = GetZone(settings.LumaEdgesRightZones, "Left");
+        txtRightRight.Text = GetZone(settings.LumaEdgesRightZones, "Right");
+        txtRightTopLeft.Text = GetZone(settings.LumaEdgesRightZones, "TopLeft");
+        txtRightTopRight.Text = GetZone(settings.LumaEdgesRightZones, "TopRight");
+        txtRightBottomLeft.Text = GetZone(settings.LumaEdgesRightZones, "BottomLeft");
+        txtRightBottomRight.Text = GetZone(settings.LumaEdgesRightZones, "BottomRight");
+
+        // Left Button
+        txtLeftTop.Text = GetZone(settings.LumaEdgesLeftZones, "Top");
+        txtLeftBottom.Text = GetZone(settings.LumaEdgesLeftZones, "Bottom");
+        txtLeftLeft.Text = GetZone(settings.LumaEdgesLeftZones, "Left");
+        txtLeftRight.Text = GetZone(settings.LumaEdgesLeftZones, "Right");
+        txtLeftTopLeft.Text = GetZone(settings.LumaEdgesLeftZones, "TopLeft");
+        txtLeftTopRight.Text = GetZone(settings.LumaEdgesLeftZones, "TopRight");
+        txtLeftBottomLeft.Text = GetZone(settings.LumaEdgesLeftZones, "BottomLeft");
+        txtLeftBottomRight.Text = GetZone(settings.LumaEdgesLeftZones, "BottomRight");
+
+        // Middle Button
+        txtMiddleTop.Text = GetZone(settings.LumaEdgesMiddleZones, "Top");
+        txtMiddleBottom.Text = GetZone(settings.LumaEdgesMiddleZones, "Bottom");
+        txtMiddleLeft.Text = GetZone(settings.LumaEdgesMiddleZones, "Left");
+        txtMiddleRight.Text = GetZone(settings.LumaEdgesMiddleZones, "Right");
+        txtMiddleTopLeft.Text = GetZone(settings.LumaEdgesMiddleZones, "TopLeft");
+        txtMiddleTopRight.Text = GetZone(settings.LumaEdgesMiddleZones, "TopRight");
+        txtMiddleBottomLeft.Text = GetZone(settings.LumaEdgesMiddleZones, "BottomLeft");
+        txtMiddleBottomRight.Text = GetZone(settings.LumaEdgesMiddleZones, "BottomRight");
     }
 
-    private string GetZone(AppSettings settings, string zone)
+    private string GetZone(System.Collections.Generic.Dictionary<string, string> dict, string key)
     {
-        return settings.LumaEdgesZones.TryGetValue(zone, out var val) ? val : "";
+        return dict.TryGetValue(key, out var val) ? val : "";
     }
 
     private void BtnSave_Click(object sender, RoutedEventArgs e)
     {
-        var app = (App)System.Windows.Application.Current;
-        var settings = app.CurrentSettings;
-
+        var settings = SettingsService.Load();
         settings.LumaEdgesThickness = (int)sldThickness.Value;
-        if (cmbTriggerButton.SelectedItem is ComboBoxItem item)
+
+        settings.LumaEdgesRightZones = new System.Collections.Generic.Dictionary<string, string>
         {
-            settings.LumaEdgesTriggerButton = item.Content.ToString() ?? "Left";
-        }
+            { "Top", txtRightTop.Text }, { "Bottom", txtRightBottom.Text },
+            { "Left", txtRightLeft.Text }, { "Right", txtRightRight.Text },
+            { "TopLeft", txtRightTopLeft.Text }, { "TopRight", txtRightTopRight.Text },
+            { "BottomLeft", txtRightBottomLeft.Text }, { "BottomRight", txtRightBottomRight.Text }
+        };
 
-        settings.LumaEdgesZones["Top"] = txtTop.Text;
-        settings.LumaEdgesZones["Bottom"] = txtBottom.Text;
-        settings.LumaEdgesZones["Left"] = txtLeft.Text;
-        settings.LumaEdgesZones["Right"] = txtRight.Text;
-        settings.LumaEdgesZones["TopLeft"] = txtTopLeft.Text;
-        settings.LumaEdgesZones["TopRight"] = txtTopRight.Text;
-        settings.LumaEdgesZones["BottomLeft"] = txtBottomLeft.Text;
-        settings.LumaEdgesZones["BottomRight"] = txtBottomRight.Text;
+        settings.LumaEdgesLeftZones = new System.Collections.Generic.Dictionary<string, string>
+        {
+            { "Top", txtLeftTop.Text }, { "Bottom", txtLeftBottom.Text },
+            { "Left", txtLeftLeft.Text }, { "Right", txtLeftRight.Text },
+            { "TopLeft", txtLeftTopLeft.Text }, { "TopRight", txtLeftTopRight.Text },
+            { "BottomLeft", txtLeftBottomLeft.Text }, { "BottomRight", txtLeftBottomRight.Text }
+        };
 
-        app.ApplySettings(settings);
-        
+        settings.LumaEdgesMiddleZones = new System.Collections.Generic.Dictionary<string, string>
+        {
+            { "Top", txtMiddleTop.Text }, { "Bottom", txtMiddleBottom.Text },
+            { "Left", txtMiddleLeft.Text }, { "Right", txtMiddleRight.Text },
+            { "TopLeft", txtMiddleTopLeft.Text }, { "TopRight", txtMiddleTopRight.Text },
+            { "BottomLeft", txtMiddleBottomLeft.Text }, { "BottomRight", txtMiddleBottomRight.Text }
+        };
+
+        ((App)System.Windows.Application.Current).ApplySettings(settings);
         Close();
+    }
+
+    private void sldThickness_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (!IsLoaded) return;
+        var app = (App)System.Windows.Application.Current;
+        app.CurrentSettings.LumaEdgesThickness = (int)e.NewValue;
+        app.LumaEdges.RebuildHotEdges();
     }
 
     private void BtnCancel_Click(object sender, RoutedEventArgs e)
