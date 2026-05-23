@@ -21,8 +21,11 @@ public class LumaEdgesModule : IDisposable
     // Mouse Hook
     private const int WH_MOUSE_LL = 14;
     private const int WM_LBUTTONDOWN = 0x0201;
+    private const int WM_LBUTTONUP = 0x0202;
     private const int WM_RBUTTONDOWN = 0x0204;
+    private const int WM_RBUTTONUP = 0x0205;
     private const int WM_MBUTTONDOWN = 0x0207;
+    private const int WM_MBUTTONUP = 0x0208;
     private delegate nint LowLevelMouseProc(int nCode, nint wParam, nint lParam);
     private LowLevelMouseProc? _mouseProcDelegate;
     private nint _mouseHookId = nint.Zero;
@@ -30,6 +33,10 @@ public class LumaEdgesModule : IDisposable
     private static readonly object CooldownLock = new();
     private static readonly TimeSpan Cooldown = TimeSpan.FromMilliseconds(300);
     private static DateTimeOffset _lastTriggeredAt = DateTimeOffset.MinValue;
+
+    private bool _lButtonBlocked = false;
+    private bool _rButtonBlocked = false;
+    private bool _mButtonBlocked = false;
 
     public void Start()
     {
@@ -189,6 +196,22 @@ public class LumaEdgesModule : IDisposable
         if (nCode >= 0)
         {
             var msg = (int)wParam;
+            if (msg == WM_LBUTTONUP && _lButtonBlocked)
+            {
+                _lButtonBlocked = false;
+                return 1;
+            }
+            if (msg == WM_RBUTTONUP && _rButtonBlocked)
+            {
+                _rButtonBlocked = false;
+                return 1;
+            }
+            if (msg == WM_MBUTTONUP && _mButtonBlocked)
+            {
+                _mButtonBlocked = false;
+                return 1;
+            }
+
             if (msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN || msg == WM_MBUTTONDOWN)
             {
                 var cursorPosition = System.Windows.Forms.Cursor.Position;
@@ -219,6 +242,10 @@ public class LumaEdgesModule : IDisposable
 
                     if (!string.IsNullOrWhiteSpace(hotkey) && TryStartCooldown())
                     {
+                        if (msg == WM_LBUTTONDOWN) _lButtonBlocked = true;
+                        else if (msg == WM_RBUTTONDOWN) _rButtonBlocked = true;
+                        else if (msg == WM_MBUTTONDOWN) _mButtonBlocked = true;
+
                         System.Threading.Tasks.Task.Run(async () => {
                             await System.Threading.Tasks.Task.Delay(10);
                             HotkeySender.SendDetailed(hotkey);

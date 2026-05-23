@@ -6,7 +6,7 @@ public static class HotZoneDetector
 {
     public static HotZone Detect(Point position, Rectangle bounds, int thickness)
     {
-        if (thickness <= 0)
+        if (thickness <= 0 || !bounds.Contains(position))
         {
             return HotZone.None;
         }
