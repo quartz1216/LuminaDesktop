@@ -13,6 +13,7 @@ public partial class App : System.Windows.Application
     public MousewarpModule Mousewarp { get; } = new MousewarpModule();
     public BwsModule Bws { get; } = new BwsModule();
     public LumaEdgesModule LumaEdges { get; } = new LumaEdgesModule();
+    public MouseGestureModule MouseGestures { get; } = new MouseGestureModule();
 
     public AppSettings CurrentSettings { get; private set; } = new AppSettings();
 
@@ -73,6 +74,7 @@ public partial class App : System.Windows.Application
 
         if (settings.IsMousewarpEnabled) Mousewarp.Start(); else Mousewarp.Stop();
         if (settings.IsBwsEnabled) Bws.Start(); else Bws.Stop();
+        if (settings.IsMouseGesturesEnabled) MouseGestures.Start(); else MouseGestures.Stop();
         
         if (settings.IsLumaEdgesEnabled) 
         {
@@ -90,6 +92,7 @@ public partial class App : System.Windows.Application
         Mousewarp.Stop();
         Bws.Stop();
         LumaEdges.Stop();
+        MouseGestures.Stop();
 
         _trayIconManager?.Dispose();
         base.OnExit(e);

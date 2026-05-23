@@ -12,6 +12,11 @@ public class AppSettings
     public bool IsMousewarpEnabled { get; set; } = true;
     public bool IsBwsEnabled { get; set; } = true;
     public bool IsLumaEdgesEnabled { get; set; } = true;
+    public bool IsMouseGesturesEnabled { get; set; } = true;
+
+    // Mouse Gestures specific
+    // Key: Process Name (e.g., "chrome"), Value: Dictionary mapping Gesture Vector (e.g., "Left") to Hotkey (e.g., "Alt+Left")
+    public Dictionary<string, Dictionary<string, string>> MouseGestures { get; set; } = new();
 
     // LumaEdges specific
     public int LumaEdgesThickness { get; set; } = 2;

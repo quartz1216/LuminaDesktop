@@ -27,6 +27,7 @@ public partial class MainWindow : Window
         chkMousewarp.IsChecked = settings.IsMousewarpEnabled;
         chkBws.IsChecked = settings.IsBwsEnabled;
         chkLumaEdges.IsChecked = settings.IsLumaEdgesEnabled;
+        chkMouseGestures.IsChecked = settings.IsMouseGesturesEnabled;
     }
 
     private void BtnSave_Click(object sender, RoutedEventArgs e)
@@ -39,6 +40,7 @@ public partial class MainWindow : Window
         settings.IsMousewarpEnabled = chkMousewarp.IsChecked == true;
         settings.IsBwsEnabled = chkBws.IsChecked == true;
         settings.IsLumaEdgesEnabled = chkLumaEdges.IsChecked == true;
+        settings.IsMouseGesturesEnabled = chkMouseGestures.IsChecked == true;
 
         app.ApplySettings(settings);
         UpdateStartupRegistry(settings.StartWithWindows);
@@ -49,6 +51,13 @@ public partial class MainWindow : Window
     private void BtnLumaEdgesSettings_Click(object sender, RoutedEventArgs e)
     {
         var settingsWindow = new LumaEdgesSettingsWindow();
+        settingsWindow.Owner = this;
+        settingsWindow.ShowDialog();
+    }
+
+    private void BtnMouseGesturesSettings_Click(object sender, RoutedEventArgs e)
+    {
+        var settingsWindow = new MouseGestureSettingsWindow();
         settingsWindow.Owner = this;
         settingsWindow.ShowDialog();
     }

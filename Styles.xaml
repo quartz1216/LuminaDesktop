@@ -214,8 +214,8 @@
                         <ToggleButton x:Name="ToggleButton" Grid.Column="2" Focusable="false" IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press">
                             <ToggleButton.Template>
                                 <ControlTemplate TargetType="ToggleButton">
-                                    <Border CornerRadius="4" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
-                                        <Path x:Name="Arrow" Fill="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Data="M 0 0 L 4 4 L 8 0 Z"/>
+                                    <Border CornerRadius="4" Background="#252526" BorderBrush="#444" BorderThickness="1">
+                                        <Path x:Name="Arrow" Fill="#AAA" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Data="M 0 0 L 4 4 L 8 0 Z"/>
                                     </Border>
                                 </ControlTemplate>
                             </ToggleButton.Template>

@@ -90,6 +90,19 @@
                                     </CheckBox>
                                     <Button Grid.Column="1" Content="⚙" Width="30" Height="30" FontSize="16" Style="{StaticResource ModernButtonStyle}" Padding="0" Click="BtnLumaEdgesSettings_Click" ToolTip="LumaEdges Settings" VerticalAlignment="Top"/>
                                 </Grid>
+                                <Grid Margin="0,15,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <CheckBox x:Name="chkMouseGestures" Style="{StaticResource ToggleSwitchStyle}">
+                                        <StackPanel>
+                                            <TextBlock Text="Mouse Gestures" Foreground="White" FontWeight="SemiBold"/>
+                                            <TextBlock Text="Right-click drag gestures per application" Foreground="#888" FontSize="12" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </CheckBox>
+                                    <Button Grid.Column="1" Content="⚙" Width="30" Height="30" FontSize="16" Style="{StaticResource ModernButtonStyle}" Padding="0" Click="BtnMouseGesturesSettings_Click" ToolTip="Mouse Gestures Settings" VerticalAlignment="Top"/>
+                                </Grid>
                             </StackPanel>
                         </Border>
                     </StackPanel>
