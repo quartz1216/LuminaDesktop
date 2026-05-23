@@ -36,5 +36,5 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host ""
 Write-Host "=============================================" -ForegroundColor Green
 Write-Host " Build complete! Installer generated in:     " -ForegroundColor Green
-Write-Host " .\Output\LuminaDesktopInstaller_v1.1.0.exe  " -ForegroundColor Green
+Write-Host " .\Output\LuminaDesktopInstaller_v1.1.1.exe  " -ForegroundColor Green
 Write-Host "=============================================" -ForegroundColor Green

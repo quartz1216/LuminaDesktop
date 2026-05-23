@@ -1,5 +1,5 @@
 #define MyAppName "LuminaDesktop"
-#define MyAppVersion "1.1.0"
+#define MyAppVersion "1.1.1"
 #define MyAppPublisher "quartz1216"
 #define MyAppURL "https://github.com/quartz1216/LuminaDesktop"
 #define MyAppExeName "LuminaDesktop.exe"
